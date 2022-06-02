@@ -25,7 +25,7 @@ const commentController = {
     Comment.findOneAndUpdate(
       { _id: params.commentId },
       { $push: { replies: body } },
-      { new: true }
+      { new: true, runValidators: true }
     )
     .then(dbPizzaData => {
       if (!dbPizzaData) {
@@ -34,15 +34,6 @@ const commentController = {
       }
       res.json(dbPizzaData);
     })
-    .catch(err => res.json(err));
-  },
-  removeReply({ params, body }, res) {
-    Comment.findOneAndUpdate(
-      { _id: params.commentId },
-      { $pull: { replies: body } },
-      { new: true }
-    )
-    .then(dbPizzaData => res.json(dbPizzaData))
     .catch(err => res.json(err));
   },
   removeComment({ params }, res) {
@@ -54,7 +45,7 @@ const commentController = {
         return Pizza.findOneAndUpdate(
           { _id: params.pizzaId },
           { $pull: { comments: params.commentId } },
-          { new: true }
+          { new: true, }
         );
       })
       .then(dbPizzaData => {
@@ -65,6 +56,15 @@ const commentController = {
         res.json(dbPizzaData);
       })
       .catch(err => res.json(err));
+  },
+  removeReply({ params }, res) {
+    Comment.findOneAndUpdate(
+      { _id: params.commentId },
+      { $pull: { replies: { replyId: params.replyId } } },
+      { new: true }
+    )
+    .then(dbPizzaData => res.json(dbPizzaData))
+    .catch(err => res.json(err));
   }
 };
 
